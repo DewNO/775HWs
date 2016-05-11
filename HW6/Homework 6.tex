@@ -1,0 +1,163 @@
+\documentclass{article}
+\usepackage{mathtools, blkarray}
+\usepackage{graphics,graphicx}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows,snakes,backgrounds}
+
+
+
+\makeatletter
+% we use \prefix@<level> only if it is defined
+\renewcommand{\@seccntformat}[1]{%
+  \ifcsname prefix@#1\endcsname
+    \csname prefix@#1\endcsname
+  \else
+    \csname the#1\endcsname\quad
+  \fi}
+% define \prefix@subsection
+\newcommand\prefix@subsection{}
+\makeatother
+
+\makeatletter
+% we use \prefix@<level> only if it is defined
+\renewcommand{\@seccntformat}[1]{%
+  \ifcsname prefix@#1\endcsname
+    \csname prefix@#1\endcsname
+  \else
+    \csname the#1\endcsname\quad
+  \fi}
+% define \prefix@subsubsection
+\newcommand\prefix@subsubsection{ }
+\makeatother
+
+\newcommand{\mytilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}}
+
+
+\begin{document}
+
+\title{Math 775: Homework 6}
+\author{Alex Dewey}
+
+
+\maketitle
+
+\section{Notes}
+
+2. Input Data
+6.2. 2.13.
+
+
+\section{Exercises}
+
+We observe independent Bernoulli variables \(X_i\) which depend
+on draws from unobservable normal variables \(Z_i \mytilde N(\zeta, \sigma^2)\)--
+\(X_i = 1 \iff Z_i > u\) for some known u. We're interested in MLEs for \(\zeta\) and
+\(\sigma^2\).
+
+\subsection{Exercise 1.}
+
+\paragraph{a.} The likelihood is \(p^S (1 - p)^{n - S}\) pretty much by construction.
+We draw excchangeable pairs \(X_i = 1\) \(Z_i > u\) with probability equal to a standard normal draw from \(p = P(Y (\mytilde N(0,1)) > {u - \zeta\over \sigma})\)
+and \(S = \sum X_i\) is just the natural sufficient statistic for this process.
+
+\paragraph{b.}
+
+If we consider \(z_i\) to be the complete data, then we're drawing n IID values from \(N(\zeta, \sigma^2\).
+
+The form \[\prod {1 \over \sqrt{2\pi}\sigma} \exp{-{1 \over 2\sigma^2}(z_i - \zeta)^2}\] is just the 
+product of those n independent distributions.
+
+To get the log-likelihood we just take the logarithm of the above:
+
+\[\log(p(z_i \vert x_i, \zeta, \sigma^2) = \log {1 \over (\sqrt{2\pi}\sigma)^n} +  -{1 \over 2\sigma^2} \sum(z_i - \zeta)^2 =\]
+\[-{n \over 2} \log {1 \over 2\pi \sigma^2} + -{1 \over 2\sigma^2}\sum(z_i^2 - 2\zeta z_i + \zeta^2) \].
+
+Since we're interested in the log-likelihood given only the observed variables \(x_i\), we get the expected log-likelihood
+by replacing \(z_i, z_i^2\) in the above with \(E[z_i \vert x_i], E[z_i^2 \vert x_i]\)
+
+\paragraph{c.}
+
+We've already done the expectation step, now we need to do the maximization step by taking derivatives
+and finding the posterior mode for \(\zeta, \sigma^2\). \(\zeta\) is easier to start with.
+
+\[{d \over d\zeta} E[\log(p(z_i \vert x_i, \zeta, \sigma^2)] =  -{1 \over 2\sigma^2} \sum (2E[z_i \vert x, \zeta, \sigma^2] - 2\zeta)\].
+
+Setting this equal to zero yields \(\hat{\zeta} = E[z_i \vert X, \zeta, \sigma^2]\). 
+
+\[{d \over d\sigma^2} E[\log(p(z_i \vert x_i, \zeta, \sigma^2)] =  
+-{n \over 2\sigma^2} + {1 \over 2(\sigma^2)^2} \sum ( E[z_i^2 \vert x, \zeta, \sigma^2] - 2\zeta E[z_i \vert x, \zeta, \sigma^2]  + \zeta^2)\].
+
+Now, for \(\sigma\) we use the mode for \(\hat{\zeta}\)
+to simplify the quadratic expression to \(E[z_i^2 \vert x, \zeta, \sigma^2] - E[z_i \vert x, \zeta, \sigma^2]^2\). Setting this equal to zero, and rearranging:
+
+\[{n \over \sigma^2} = {1 \over (\sigma^2)^2} \sum (E[z_i^2 \vert x, \zeta, \sigma^2] - E[z_i \vert x, \zeta, \sigma^2]^2)\]
+\[n\sigma^2 = \sum (E[z_i^2 \vert x, \zeta, \sigma^2] - E[z_i \vert x, \zeta, \sigma^2]^2)\].
+
+We get \[\hat{\sigma^2} = {1\over n}\big[ \sum E[z_i^2 \vert x, \zeta, \sigma^2] - {1 \over n} \sum[z_i \vert x, \zeta, \sigma^2]^2) \big] \] 
+through simple manipulations of the interior. This is the maximization step, so this completes the algorithm.
+
+\paragraph{d.}
+
+First note that the function
+
+\(H_i(t) = {\psi(t) \over 1 - \phi(t)}\) if \(X_i = 1\), and
+\(H_i(t) = -{\psi(t) \over \phi(t)}\) if \(X_i = 0\).
+
+is just a censored normal above and below the standardized score \(t = {u - \zeta \over \sigma}\).
+So it represents the two possible expected values that \(Z_i\) can take on when we know
+(because we know the value of \(x_i\)) that \(Z_i\) is either above or below u, and we 
+have no other information, so all we can do is take the expected value for a given draw
+from the left- or right-truncated normal.
+
+This is made much more obvious
+\[E[z_i \vert x, \zeta, \sigma^2] = \zeta + \sigma H_i({u - \zeta \over \sigma})\]
+simply if it's written as:
+\[{E[z_i \vert x, \zeta, \sigma^2] - \zeta \over \sigma} = H_i({u - \zeta \over \sigma})\].
+
+As for:
+\[E[z_i^2 \vert x, \zeta, \sigma^2] = \zeta^2 + \sigma^2 + \sigma (u + \zeta) H_i({u - \zeta \over \sigma})\]
+
+We're interested in the expectation of \(Z_i^2\) over the truncated left- or right- normal.
+
+This is a common distribution but normal integrals are notoriously difficult to integrate
+analytically (it's just integration by parts), so I looked up the variance for
+a right-truncated normal distribution to demonstrate that the above is right.
+\(t = {u - \zeta \over \sigma}\) for space constraints.
+
+The expectation is \[E(Z \vert Z_i < u) = \zeta - \sigma {\psi(t)\over \phi(t)}\]
+and the variance is \[Var(Z \vert Z_i < u) = \sigma^2(1 - t{\psi(t)\over \phi(t)} - ({\psi(t)\over \phi(t)})^2\]
+
+\(E[Z^2] = Var[Z] + E[Z]^2\).
+
+\[E(Z^2 \vert Z_i < u) = \zeta^2 - 2\zeta\sigma {\psi(t)\over \phi(t)} + \sigma^2 {\psi(t)\over \phi(t)}^2
++  \sigma^2[1 - t{\psi(t)\over \phi(t)} - ({\psi(t)\over \phi(t)})^2] = \]
+\[ \zeta^2 - 2\zeta\sigma {\psi(t)\over \phi(t)} 
++  \sigma^2 - \sigma^2{u - \zeta \over \sigma}{\psi(t)\over \phi(t)} = 
+\zeta^2 + 2\zeta\sigma h(t) 
++  \sigma^2 + \sigma(u - \zeta)h(t) = \]
+\[\zeta^2 + \zeta\sigma h(t) 
++  \sigma^2 + \sigma u h(t) = \zeta^2 + \sigma^2 + \sigma (\zeta + u) h(t)\]
+
+\paragraph{e.}
+
+By Theorem 5.3.5 in (Robert/Casella, 1999, pp. 215), we know that as long as our
+expected complete data-likelihood \(Q(\theta \vert \theta_0, x)\) is continuous in our prior \(\zeta_0\, \sigma_0\) and
+our parameters \(\zeta, \sigma\), ``every limit point of an EM sequence'' is a stationary point of \(L(\theta \vert x)\).
+
+Robert/Casella have a neat proof which analytically computes the iterative steps, but in this case,
+it suffices to note Theorem 5.3.5 and that every stationary point is an MLE in this model.
+
+Proof: The \(Z_i\) are normal and IID so we're effectively computing a linear regression on
+with spherical errors \(Z_i\). Takeaway: One or more MLEs for \((\hat{\zeta}, \hat{\sigma^2})\)
+are guaranteed to exist, so it's a well-defined question to ask if they will converge
+to one of these MLEs.
+
+Furthermore: If a point \((\hat{\zeta}, \hat{\sigma^2})\) is a fixed point after iterating in part (c.),
+then it also satisfies the ordinary least squares equations for those parameters, and so it is an MLE.
+
+Finally: If a point is not stationary after the iteration in part (c), Theorem 5.3.5 guarantees that
+it will converge to a fixed point (which by the argument in the above paragraph) is an MLE.
+
+
+\end{document}

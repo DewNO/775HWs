@@ -1,0 +1,459 @@
+\documentclass{article}
+\usepackage{mathtools, blkarray}
+\usepackage{graphics,graphicx}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows,snakes,backgrounds}
+
+
+
+\makeatletter
+% we use \prefix@<level> only if it is defined
+\renewcommand{\@seccntformat}[1]{%
+  \ifcsname prefix@#1\endcsname
+    \csname prefix@#1\endcsname
+  \else
+    \csname the#1\endcsname\quad
+  \fi}
+% define \prefix@subsection
+\newcommand\prefix@subsection{}
+\makeatother
+
+\makeatletter
+% we use \prefix@<level> only if it is defined
+\renewcommand{\@seccntformat}[1]{%
+  \ifcsname prefix@#1\endcsname
+    \csname prefix@#1\endcsname
+  \else
+    \csname the#1\endcsname\quad
+  \fi}
+% define \prefix@subsubsection
+\newcommand\prefix@subsubsection{ }
+\makeatother
+
+
+
+\begin{document}
+
+\title{Math 775: Homework 1}
+\author{Alex Dewey}
+
+
+\maketitle
+
+
+\section{Exercises}
+
+\subsection{Exercise 1.}
+\subsubsection{(a.)}
+
+Prior \(\times\) Likelihood = Marginal \(\times\) Posterior.
+
+\begin{equation}
+p(D=d)p(LVH=\text{yes} \vert D=d) = p(LVH=\text{yes})p(D=d \vert LVH=\text{yes}).
+\end{equation}
+
+We're given both the prior and the likelihood probabilities
+on the left side of Equation 1, so we can simply multiply them together.
+
+In order to get the marginal probability \(p(LVH = \text{yes})\), we simply need
+to sum over the possible values for D:
+
+\begin{equation}
+p(LVH = \text{yes}) = \sum^{6}_{i=1} p(D = d_i)p(LVH = \text{yes} \vert D=d_i).
+\end{equation}
+
+Then we can simply divide the left side of Equation 1 by the marginal probability \(p(LVH=\text{yes})\) to get the
+posterior proabability for each disease d. Below is a table summarizing the calculations (\(p(LVH=\text{yes})\) has
+been shortened to \(p(LVH)\) for space):
+
+\begin{flushleft}
+  \begin{tabular}{| r | c | c | c | c |}
+\hline
+    \textbf{Disease} & \textbf{Prior} & \textbf{Likelihood} & \textbf{Prior}\(\times\)\textbf{Likelihood} & \textbf{Posterior} \\ \hline
+	\textbf{d} & \(p(D=d)\) & \(p(\text{LVH} \vert D=d)\) & \(p(D=d)p(\text{LVH} \vert D=d)\) & \(p( D=d \vert \text{LVH})\)\\ \hline \hline
+	\textbf{PFC} & 0.45 & 0.10 & 0.045 & \textbf{0.3008}  \\ \hline
+	\textbf{TGA} & 0.14 & 0.15 & 0.021 & \textbf{0.1404} \\ \hline
+	\textbf{Fallot} & 0.03 & 0.12 & 0.036 & \textbf{0.0241} \\ \hline
+	\textbf{PAIVS} & 0.06 & 0.90 & 0.054 & \textbf{0.3610} \\ \hline
+	\textbf{TAPVD} & 0.12 & 0.05 & 0.006 & \textbf{0.0401} \\ \hline
+	\textbf{Lung} & 0.20 & 0.10 & 0.020 & \textbf{0.1337} \\ \hline
+	\textbf{Marginal} & &\(p(\text{LVH})\) & \textbf{0.1496} & \textbf{1} \\ \hline
+  \end{tabular}
+\end{flushleft}
+
+The posterior distribution \(p(D=d \vert LVH=\text{yes})\) differs from our prior \(p(D=d)\) in that 
+values with higher relative likelihoods (such as PAIVS, for example) also have higher relative posterior probabilities.
+If someone has PAIVS, the likelihood they have left ventricular hypertrophy is 0.90, 
+This extremely high likelihood is enough to make PAIVS the most likely of all six diseases given that a patient has LVH, even though 
+PAIVS was only the fifth most likely disorder in our prior distribution \(p(D=d)\).
+
+\subsubsection{(b.)}
+
+In order to compute the posterior \(p(D=d \vert \text{LVH-report = yes})\), we need the prior \(p(d)\) (already given to us),
+the likelihood \(p(\text{LVH-report = yes} \vert D=d)\), and the marginal probability \(p(\text{LVH-report=yes})\).
+
+To compute the likelihood \(p(\text{LVH-report = yes} \vert D=d)\), we need to sum over
+the two intermediate of LVH that can result in the measurement being true
+(corresponding to true positives and false positives). In other words, we have to compute
+\begin{flushleft}
+	\begin{tabular} {l}
+	\(p(\text{LVH-report=yes} \vert \text{D=d})\)  = \\
+	\(p(\text{LVH-report=yes} \vert \text{LVH=yes})p(\text{LVH=yes} \vert \text{D=d})\) +\\ 
+	\(p(\text{LVH-report=yes} \vert \text{LVH=no})p(\text{LVH=no} \vert \text{D=d})\) = \\
+	\( 0.90*p(\text{LVH=yes} \vert \text{D=d}) + 0.05*(1 - p(\text{LVH=yes} \vert \text{D=d}))\)
+	\end{tabular}
+\end{flushleft}
+for each disease. These likelihoods are tabulated below.
+
+We can simply sum up the \textbf{Prior}\(\times\)\textbf{Likelihood} column to 
+get the marginal probability.
+
+\begin{flushleft}
+  \begin{tabular}{| r | c | c | c | c |}
+\hline
+    \textbf{Disease} & \textbf{Prior} & \textbf{Likelihood} & \textbf{Prior}\(\times\)\textbf{Likelihood} & \textbf{Posterior} \\ \hline
+	\textbf{d} & \(p(D=d)\) & \(p(\text{Report} \vert D=d)\) & \(p(D=d)p(\text{Report} \vert D=d)\) & \(p( D=d \vert \text{Report})\)\\ \hline \hline
+	\textbf{PFC} & 0.45 & 0.1350 & 0.06075 & \textbf{0.34291}  \\ \hline
+	\textbf{TGA} & 0.14 & 0.1775 & 0.02485 & \textbf{0.14026} \\ \hline
+	\textbf{Fallot} & 0.03 & 0.152 & 0.00456 & \textbf{0.02574} \\ \hline
+	\textbf{PAIVS} & 0.06 & 0.815 & 0.04890 & \textbf{0.27602} \\ \hline
+	\textbf{TAPVD} & 0.12 & 0.0925 & 0.01110 & \textbf{0.0627} \\ \hline
+	\textbf{Lung} & 0.20 & 0.1350 & 0.02700 & \textbf{0.15240} \\ \hline
+	\textbf{Marginal} & &\(p(\text{Report=yes})\) & \textbf{0.17716} & \textbf{1} \\ \hline
+  \end{tabular}
+\end{flushleft}
+
+The posterior probabilities are mostly the same as they were before we 
+added in the test layer, but, most notably, PAIVS has slipped
+back into the second-most-likely disease given a positive test for LVH. This
+is because the uncertainty of the test layer reduces the likelihood of PAIVS.
+Its likelihood catches the full negative impact of the 10\% chance of false positives 
+(decreases from .90 to .81 and gets
+next to no increase in likelihood from 
+the 5\% chance of true negatives (.815).
+
+\subsection{Exercise 2.}
+
+\subsubsection{a.} 
+Suppose y has a Poisson distribution with mean \(\theta\) and \(\theta\) is
+gamma with shape parameter \(\alpha\) and rate parameter \(\beta\).
+
+So \(p(y \vert \theta) = {1 \over y!}\theta^y e^{-\theta}\) 
+
+and
+
+\(p(\theta \vert \alpha, \beta) = {\beta^{\alpha} \over \Gamma(\alpha)}\theta^{\alpha - 1}e^{-\beta\theta}\).
+
+By definition, the marginal distribution \(p(y \vert \alpha, \beta)\) is the integral:
+
+
+\[\int_{0}^{\infty} \delta\theta p(y \vert \theta)p(\theta \vert \alpha, \beta) = \]
+
+\[\int_{0}^{\infty} \delta\theta {1 \over y!}\theta^y e^{-\theta}{\beta^{\alpha} \over \Gamma(\alpha)}\theta^{\alpha - 1}e^{-\beta\theta} =\]
+
+\begin{equation}
+\int_{0}^{\infty} \delta\theta {\beta^{\alpha} \over \Gamma(\alpha) y!} \theta^{y + \alpha - 1} e^{-(\beta + 1)\theta}
+\end{equation}
+
+(Note that we only integrate over the positive reals for \(\theta\) because the gamma function
+is not defined for the negative reals. On a related note, the Poisson distribution takes on discrete
+nonnegative values.)
+
+After simplifying, we're faced with a difficult indefinite integral. However, given that functions in the form of distributions
+must integrate to one (and this looks particularly close to a gamma distribution), we might be able to find the 
+marginal distribution simply by restructuring our integral into a known density times a function of \(\alpha, \beta\), and y.
+
+While Equation 3 above appears to be very similar to the original gamma density, we still have to alter some of the parameters
+to make it work. For example, y! in the denominator must be rewritten as \(\Gamma(y+1)\) or \(y\Gamma(y)\). Now, given that
+the exponent on \(\theta\) is now \(y + \alpha - 1\) and we have a denominator of \( \Gamma(\alpha)*\Gamma(y)y\),
+we should probably be thinking about using a shape parameter of \((y + \alpha)\).
+
+We also have \( \Gamma(\alpha)\Gamma(y)y = B(\alpha, y)\Gamma(\alpha + y)y\), where \(B(\alpha, \beta)\) denotes the beta function.
+
+While this is getting quite complicated, recall that our integral is a function of \(theta\), so that
+we just need to be able to put something inside the integral that will integrate to one.
+
+In fact, we can use a similar trick to rewrite the exponent \(\beta^\alpha\) as \(\beta^{y + \alpha}\beta{-y}\) and remove
+the \(\beta^{-y}\) from the integral. Putting this all together:
+
+\begin{equation}
+{1 \over yB(\alpha, y)} \beta^{-y} \int_{0}^{\infty} \delta\theta {\beta^{y + \alpha} \over \Gamma(\alpha + y)} \theta^{y + \alpha - 1} e^{-(\beta + 1)\theta}
+\end{equation}
+
+Unfortunately there doesn't appear to be a good way to handle the exponential term at the end of Equation 4 unless we decide to change our rate parameter to \(\beta + 1\). 
+The exponentiation \(e^\theta\) can't be removed without some kind of complex transformation. So instead, let's just use a convoluted but
+effective multiplicative term of \( { (\beta + 1)^{y + \alpha} \over \beta^{y + \alpha} }\) in the inside of the integral, while
+multiplying our outside terms by \( { \beta^{y + \alpha} \over (\beta + 1)^{y + \alpha} }\). 
+
+This leaves us with 
+
+\[p(y \vert \alpha, \beta) = {1 \over yB(\alpha, y) }\beta^{-y} { \beta^{y + \alpha} \over (\beta + 1)^{y + \alpha} } 
+\int_{0}^{\infty} \delta\theta {(\beta + 1)^{y + \alpha} \over \Gamma(y + \alpha)} \theta^{y + \alpha - 1} e^{-(\beta + 1)\theta}\]
+
+\begin{equation}
+= {1 \over yB(\alpha, y) }{ \beta^{\alpha} \over (\beta + 1)^{y + \alpha} } \int_{0}^{\infty} \delta\theta \Gamma(y + \alpha, \beta + 1)
+= {\beta^{\alpha} \over (\beta + 1)^{y + \alpha} B(\alpha, y) y}.
+\end{equation}
+
+\subsubsection{b.}
+
+Now suppose \(y_i\) (i = 1,2), \(y_1, y_2\) independent
+has a Poisson distribution with mean \(c \theta_i\) with \(p(c) = \Gamma(\alpha, \beta)\).
+
+What is the marginal distribution \(p(y_1, y_2 \vert \alpha, \beta, \theta_1, \theta_2)\)? We have:
+
+\(p(y_i \vert c, \theta_i) = {1 \over y!_{i}} c^{y_i} \theta_i^{y_i} e^{-c\theta_i}\)
+
+\(p(c \vert \alpha, \beta, \theta_i) = { \beta^{\alpha} \over \Gamma(\alpha)} c^{\alpha - 1}e^{-\beta c}\)
+
+
+\begin{equation}
+p(y_i \vert \alpha, \beta, \theta_i) = 
+\int_{0}^{\infty} \delta c {1 \over {y_{i}}!} c^{y_i} \theta_i^{y_i} e^{-c\theta_i} 
+{ \beta^{\alpha} \over \Gamma(\alpha)} c^{\alpha - 1}e^{-\beta c}
+\end{equation}
+
+\[ = \theta_i^{y_i} \int_{0}^{\infty} \delta c 
+{ \beta^{\alpha} \over \Gamma(\alpha) {y_{i}}!} c^{y_i + \alpha - 1}e^{-(\beta + \theta_i)c}\]
+
+Once again, we seem to be being pushed towards a certain gamma distribution--in this case, 
+\(\Gamma(y_i + \alpha, \beta + \theta_i)\).
+
+\begin{equation}
+\Gamma(y_i + \alpha, \beta + \theta_i) = {(\beta + \theta_i)^{y_i + \alpha} \over \Gamma(y_i + \alpha) } c^{y_i + \alpha - 1}e^{-(\beta + \theta_i)c}
+\end{equation}
+
+Notice that the last two multiplicative terms are already what we want in the final distribution.
+
+Also note: As in part (a), we have 
+\( \Gamma(\alpha)\Gamma(y_{i})y_{i} = B(\alpha, y_{i})\Gamma(\alpha + y_{i})y_{i}\), 
+where \(B(\alpha, \beta)\) denotes the beta function.
+
+
+\[ p(y_i \vert \alpha, \beta, \theta_i) = \theta_i^{y_i} \int_{0}^{\infty} \delta c 
+{ \beta^{\alpha} \over \Gamma(\alpha) \Gamma(y_{i})y_{i}} c^{y_i + \alpha - 1}e^{-(\beta + \theta_i)c}\]
+
+\[ =  \theta_i^{y_i} \int_{0}^{\infty} \delta c 
+{ \beta^{\alpha} \over B(\alpha, y_{i})\Gamma(y_{i} + \alpha)y_{i}} c^{y_i + \alpha - 1}e^{-(\beta + \theta_i)c}\]
+
+\[= { {\theta_i}^{y_i} \beta^{\alpha} \over B(\alpha, y_{i}) (\beta + \theta_i)^{y_i + \alpha}y_{i}} 
+\int_{0}^{\infty} \delta c  {(\beta + \theta_i)^{y_i + \alpha} \over \Gamma(y_{i} + \alpha)} c^{y_i + \alpha - 1}e^{-(\beta + \theta_i)c}\]
+
+\[ = { {\theta_i}^{y_i} \beta^{\alpha} \over B(\alpha, y_{i}) (\beta + \theta_i)^{y_i + \alpha}y_{i}}\]
+\begin{equation}
+\prod_{i=1,2} p(y_i \vert \alpha, \beta, \theta_i) = \prod_{i=1,2} { {\theta_i}^{y_i} \beta^{\alpha} \over B(\alpha, y_{i}) (\beta + \theta_i)^{y_i + \alpha}y_{i}}
+\end{equation}
+
+\subsection{Exercise 3.}
+
+We know that Elvis had a twin brother. We 
+want to find the probability, conditioned on knowing
+that Elvis had a twin brother, that this brother is an identical twin.
+
+Suppose "tb" is the event that Elvis has a twin brother,
+"it" is the event that Elvis has an identical twin, and "ft"
+is the event that Elvis has a fraternal twin.
+
+We have \(p(tb \vert it) = 1\), because 
+identical twins have the same sex, and \(p(tb \vert ft) = .5\), because 
+by assumption there's a 50\% chance that a fraternal twin is
+of the same sex. We also have \(p(it) = 1/300\) and \(p(ft) = 1/125\),
+and we can find the marginal probability 
+\(p(tb) = p(tb \vert ft)p(ft) + p(tb \vert it)p(it) = .5*1/125 + 1/300 = 11/1500\)
+(assuming twins can only be fraternal or identical, and assuming
+that we can ignore correlation between twins, etc.).
+
+We want to find \(p(it \vert tb)\). 
+
+Applying Bayesian inference, where \({\textbf{prior} \times \textbf{likelihood} \over \textbf{marginal}} = \textbf{posterior}\),
+we can calculate \(p(it \vert tb) = {p(it) \times p(tb \vert it) \over p(tb)} = {1/300 \times 1 \over 11/1500} = 5/11\).
+
+\subsection{Exercise 4.}
+
+Using the same reasoning and format as with Dr. X on the handout,
+we can simply compute the posterior in the standard way,
+and then we can compute the expected value of the posterior distribution
+to give the predictive probability that the next
+patient will be better, given each doctor's prior and the observed 18/21 success rate.
+
+Below, Tables 2 and 3 demonstrate this calculation for both Dr. Y (0.8336) and Dr. Z (0.7908).
+
+We can also use the tables to compute the posterior odds and the prior odds for each doctor.
+\begin{table}
+\begin{flushleft}
+  \begin{tabular}{| r | c | c | c|}
+\hline
+ \textbf{Doctor} & \textbf{Prior Odds} & \textbf{Posterior Odds} & \textbf{Bayes Factor} \\ \hline
+					& \(g = P(H)/P(K)\)	&	\(f = P(H \vert \text{data})/P(K \vert \text{data})\)& f/g \\ \hline
+		X 		& \({6/11 \over 5/11} = 1.2\) & \({0.001 \over 0.999} \approx 0.001\)  & \(\approx 0.0008\) \\
+		Y 		& \({15/55 \over 40/55} = .375\) & \( {0.001 \over 0.999} \approx 0.001\)  & \(\approx 0.00229\) \\
+		Z 		& \({0.95 \over 0.05} = 19\) & \( {0.111 \over 0.888} \approx 0.125\)  & \(\approx 0.00657\) \\
+\hline
+\end{tabular}
+\end{flushleft}
+\caption{Computing the Bayes Factor for each doctor}
+\begin{flushleft}
+  \begin{tabular}{| r | c | c | c | c | c |}
+\hline
+    \textbf{Parameter} & \textbf{Prior} & \textbf{Likelihood} & \textbf{Prior}\(\times\)\textbf{Likelihood} & \textbf{Posterior} & \(\theta \times\)Posterior \\ \hline
+	\textbf{\(\theta\)} & \(p(\Theta=\theta)\) & \(p(\tilde{y} = B \vert \Theta=\theta)\) & \(\Theta=\theta)p(\tilde{y} = B \vert \Theta=\theta)\) & \(p( \Theta=\theta \vert \tilde{y} = B)\) & \\ \hline \hline
+	0.0 & 0 & 0 & 0 & 0 & 0\\ \hline
+	0.1 & \(1 \over 55\) & tiny & tiny & tiny & tiny \\ \hline
+	0.2 & \(2 \over 55\) & tiny & tiny & tiny & tiny \\ \hline
+	0.3 & \(3 \over 55\) & tiny & tiny & tiny & tiny  \\ \hline
+	0.4 & \(4 \over 55\) & tiny & tiny & tiny & tiny \\ \hline
+	0.5 & \(5 \over 55\) & 4.77E-7 & 4.335E-8 & tiny & tiny  \\ \hline
+	0.6 & \(6 \over 55\) & 6.50E-6 & 7.091E-7 & 0.0137  & 0.0082 \\ \hline
+	0.7 & \(7 \over 55\) & 4.40E-5 & 5.596E-6 & 0.108 & 0.0755 \\ \hline
+	0.8 & \(8 \over 55\) & 1.44E-4 & 2.096E-5 & 0.404 & 0.3233 \\ \hline
+	0.9 & \(9 \over 55\) & 1.50E-4 & 2.456E-5 & 0.473 & 0.4261 \\ \hline
+	1.0 & \(10 \over 55\) & 0 & 0 & 0 & 0 \\ \hline
+	\textbf{Marginal} & &\(p(\tilde{y} = B)\) & \textbf{5.1872E-5} & \(p(y_{22} = B)\) & \textbf{0.833568} \\ \hline
+  \end{tabular}
+\end{flushleft}
+\caption{Dr. Y}
+\begin{flushleft}
+  \begin{tabular}{| r | c | c | c | c | c |}
+\hline
+    \textbf{Parameter} & \textbf{Prior} & \textbf{Likelihood} & \textbf{Prior}\(\times\)\textbf{Likelihood} & \textbf{Posterior} & \(\theta \times \)Posterior  \\ \hline
+	\textbf{\(\theta\)} & \(p(\Theta=\theta)\) & \(p(\tilde{y} = B \vert \Theta=\theta)\) & \(\Theta=\theta)p(\tilde{y} = B \vert \Theta=\theta)\) & \(p( \Theta=\theta \vert \tilde{y} = B)\) & \\ \hline \hline
+	0.0 & 0.01 & 0 & 0 & 0 & 0\\ \hline
+	0.1 & 0.01 & tiny & tiny & tiny & tiny \\ \hline
+	0.2 & 0.01& tiny & tiny & tiny & tiny \\ \hline
+	0.3 & 0.01 & tiny & tiny & tiny & tiny\\ \hline
+	0.4 & 0.01 & tiny & tiny & tiny & tiny \\ \hline
+	0.5 & 0.90 & 4.77E-7 & 4.292E-7 & 0.111 & 0.0554\\ \hline
+	0.6 & 0.01 & 6.50E-6 & 6.500E-8 & 0.0168 & 0.0101 \\ \hline
+	0.7 & 0.01 & 4.40E-5 & 4.397E-7 & 0.113 & 0.0794 \\ \hline
+	0.8 & 0.01 & 1.44E-4 & 1.441E-6 & 0.372 & 0.2974 \\ \hline
+	0.9 & 0.01 & 1.50E-4 & 1.501E-6 & 0.387 & 0.34851 \\ \hline
+	1.0 & 0.01 & 0 & 0 & 0 & 0\\ \hline
+	\textbf{Marginal} & &\(p(\tilde{y} = B)\) & \textbf{3.876E-6} &  \(p(y_{22} = B)\) & \textbf{0.790795} \\ \hline
+  \end{tabular}
+\end{flushleft}
+\caption{Dr. Z}
+\end{table}
+
+
+\newpage
+
+\subsection{Exercise 5.}
+
+First of all, let's use simple fraction algebra to alter the forms given for \(\mu_1\) and \(1 \over \tau_1^2\):
+\[{1 \over \tau_1^2} = {1 \over \tau_0^2} + {1 \over \sigma^2} = {\sigma^2 + \tau_0^2 \over \tau_0^2 \sigma^2}\]
+\[\mu_1 = {{\mu_0 \sigma^2 + \tau_0^2 y  \over \tau_0^2 \sigma^2} \over  {\sigma^2 + \tau_0^2 \over \tau_0^2 \sigma^2}  } = {\mu_0 \sigma^2 + y \tau_0^2 \over \sigma^2 + \tau_0^2} \] 
+
+Next, let's develop some of the forms that will appear in our derivation:
+
+\[\mu_1^2 = \big({\mu_0 \sigma^2 + y \tau_0^2 \over \sigma^2 + \tau_0^2}\big)^2 \] 
+
+\[{\mu_1^2 \over \tau_1^2} 
+= {(\mu_0 \sigma^2 + y \tau_0^2)^2 \over (\sigma^2 + \tau_0^2)^2} {\sigma^2 + \tau_0^2 \over \tau_0^2 \sigma^2}
+=  {(\mu_0 \sigma^2 + y \tau_0^2)^2 \over (\sigma^2 + \tau_0^2) \tau_0^2 \sigma^2}\]
+
+
+
+\[  { \mu_1 \over \tau_1^2 }
+=  {\mu_0 \sigma^2 + y \tau_0^2 \over \sigma^2 + \tau_0^2} {\sigma^2 + \tau_0^2 \over \tau_0^2 \sigma^2}
+ = {\mu_0 \sigma^2 + y \tau_0^2 \over \tau_0^2 \sigma^2}
+= {\mu_0 \over \tau_0^2} + {y \over \sigma^2}\] 
+
+
+Now, let's calculate the likelihood times the prior.
+
+We have: 
+
+\(p(\theta) \propto \exp{-(\theta - \mu_0)^2 \over 2 \tau_0^2}\)
+and \(p(y \vert \theta) = {1 \over \sqrt{2\pi}\sigma}\exp{-(y - \theta)^2 \over 2\sigma^2}\)
+
+ \[p(\theta \vert y) \propto  {1 \over \sqrt{2\pi}\sigma}
+\exp{ -(y - \theta)^2 \over 2\sigma^2}\exp{-(\theta - \mu_0)^2 \over 2 \tau_0^2}\]
+
+ \[p(\theta \vert y) \propto  {1 \over \sqrt{2\pi}\sigma}
+\exp{ \bigg( {-(y - \theta)^2 \over 2\sigma^2} - {(\theta - \mu_0)^2 \over 2 \tau_0^2} \bigg)}\]
+
+ \[p(\theta \vert y) \propto  {1 \over \sqrt{2\pi}\sigma}
+\exp{ \bigg[ -{1 \over 2 \sigma^2 \tau_0^2}\bigg(({\tau_0^2(\theta -  y)^2 + \sigma^2(\theta - \mu_0)^2}) \bigg)\bigg]}\]
+
+ \[p(\theta \vert y) \propto  {1 \over \sqrt{2\pi}\sigma}
+\exp{\bigg[-{1 \over 2 \sigma^2 \tau_0^2} \bigg( 
+\big( \tau_0^2 + \sigma^2\big)\theta^2 + 
+\big(\mu_0^2\sigma^2 + \tau_0^2y^2\big) 
+- 2\theta\big(\mu_0\sigma^2 + y\tau_0^2\big)
+\bigg)\bigg]}\]
+
+ \[p(\theta \vert y) \propto  {1 \over \sqrt{2\pi}\sigma}
+\exp{\bigg[-{\theta^2 \over 2 \tau_1^2} - {1 \over 2 \sigma^2 \tau_0^2} 
+\bigg( \big(\mu_0^2\sigma^2 + \tau_0^2y^2\big) 
+- 2\theta\big(\mu_0\sigma^2 + y\tau_0^2\big)
+\bigg)\bigg]}\]
+
+ \[p(\theta \vert y) \propto  {1 \over \sqrt{2\pi}\sigma}
+\exp{(-{1 \over 2}\bigg[{\theta^2 \over \tau_1^2} - {2 \theta \mu_1 \over \tau_1^2} + 
+{\mu_0^2\sigma^2 + \tau_0^2y^2 \over \sigma^2 \tau_0^2} 
+\bigg])}\]
+
+Because this is a posterior density whose random variable is \(\theta\),
+we can treat all other variables as constants, and in particular the third
+term in the exponential can for now be treated simply as a multiplicative constant
+of integration.
+
+\begin{flushleft}
+\begin{tabular} {l}
+ \( p(\theta \vert y) \propto\) 
+\({1 \over \sqrt{2\pi}\sigma}\exp{(-{1 \over 2\tau_1^2}\bigg[\theta^2  - 2 \theta \mu_1 + 
+{\mu_0^2\sigma^2 + \tau_0^2y^2 \over \sigma^2 + \tau_0^2} 
+\bigg])} \propto\) \\
+\({1 \over \sqrt{2\pi}\sigma} \exp{(-{1 \over 2\tau_1^2}\bigg[\theta^2  - 2 \theta \mu_1  
+\bigg])} \propto \) \\
+\({1 \over \sqrt{2\pi}\sigma}\exp{(-{1 \over 2\tau_1^2}\bigg[\theta^2  - 2 \theta \mu_1  
++ \mu_1^2 \bigg])} = {1 \over \sqrt{2\pi}\sigma} \exp{(-{1 \over 2\tau_1^2}(\theta - \mu_1)^2)}\) \\
+= \({1 \over \sqrt{2\pi}\tau_1} \exp{(-{1 \over 2\tau_1^2}(\theta - \mu_1)^2)}\) \\
+\end{tabular}
+\end{flushleft}
+
+Because this posterior is a normal distribution (with posterior mean \(\mu_1\) and variance \(\tau_1^2\)),
+which integrates to one (after we multiply by \(\sigma \over \tau_1\) in the last step of the 
+above derivation), the marginal distribution \(p(y) = \int^{\infty}_{-\infty}  p(y \vert \theta) p(\theta) d\theta\)
+is just the inverse of the multiplicative constant we introduced above, now treated as a function of y:
+
+\begin{equation}
+p(y) = {\tau_1 \over \sigma}\exp{\bigg(-{1 \over 2\tau_1^2}\big({\mu_0^2\sigma^2 + \tau_0^2y^2 \over \sigma^2 + \tau_0^2} - \mu_1^2\big) \bigg)}
+\end{equation}
+
+Of course, by the same argument as above, we can eliminate multiplicative terms that don't depend on \(y\) as 
+constants of integration:
+
+\begin{equation}
+p(y) \propto \exp{\bigg(-{1 \over 2\tau_1^2}\big({\tau_0^2y^2 \over \sigma^2 + \tau_0^2}\big) \bigg)} = 
+\exp{\bigg(-{y^2 \over 2\sigma^2} \bigg)}
+\end{equation}
+
+The marginal distribution appears to be a normal centered around 0 with variance \(\sigma^2\).
+
+\subsubsection{b.}
+
+The induction proof to a sample \(\textbf{y} = (y_1, ..., y_n)\) is mostly obvious once the base case has been established.
+
+Just as we showed the conjugate transformations of \((\mu_0, \tau_0)\) to \((\mu_1, \tau_1)\)
+through the weighted averages below, we can do the same thing 
+inductively to go from \((\mu_{n-1}, \tau_{n-1})\) to \((\mu_n, \tau_n)\).
+
+\begin{equation}
+\mu_1 = {{ 1 \over \tau_0^2}\mu_0 + {1 \over \sigma^2}y \over {1 \over \tau_0^2} + {1 \over \sigma^2}}
+\end{equation}
+\begin{equation}
+\tau_1 = {1 \over \tau_0^2} + {1 \over \sigma^2}
+\end{equation}
+
+The only thing to be careful about is deriving the sample mean \(\bar{y}\) in the numerator of \(\mu_n\):
+\begin{equation}
+{ 1 \over \tau_0^2}\mu_0 + {1 \over \sigma^2}\sum_{i=1}^{n-1}{y_i} + {1 \over \sigma^2}y_n
+= { 1 \over \tau_0^2}\mu_0 + {1 \over \sigma^2}\sum_{i=1}^{n}{y_i}
+= { 1 \over \tau_0^2}\mu_0 + {n \over \sigma^2}{\bar{y}}
+\end{equation}
+
+
+
+\end{document}
